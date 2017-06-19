@@ -12,4 +12,11 @@ package com.library.asamba.utils;
 
 public class SmbUtil {
 
+    private static String a;
+
+    public static boolean login(String username, String pwd, String host, String path) {
+        a = path;
+        return false;
+    }
+
 }

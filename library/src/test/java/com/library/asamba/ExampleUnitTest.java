@@ -1,5 +1,7 @@
 package com.library.asamba;
 
+import com.library.asamba.utils.SmbUtil;
+
 import org.junit.Test;
 
 import java.io.IOException;
@@ -18,7 +20,12 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
 
     private static final String SMB_URL_PWD = "smb://shaojun:123456@192.168.1.102/homes/";
-    private static final String SMB_URL = "smb://192.168.1.102/homes/";
+    private static final String SMB_URL = "smb://192.168.1.102";
+    private static final String USERNAME = "shaojun";
+    private static final String PWD = "123456";
+    private static final String HOST = "192.168.1.102";
+    private static final String PATH = "/homes/";
+
 
     @Test
     public void listString() {
@@ -57,7 +64,7 @@ public class ExampleUnitTest {
 
         SmbFile file = null;
         try {
-            file = new SmbFile(SMB_URL_PWD);
+            file = new SmbFile(SMB_URL);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -99,6 +106,14 @@ public class ExampleUnitTest {
         }
         System.out.println();
         System.out.println(files.length + " files in " + t2 + "ms");
+    }
+
+    @Test
+    public void testLogin() {
+
+        boolean isLogin = SmbUtil.login(USERNAME, PWD, HOST, PATH);
+
+        assertTrue("login failed", isLogin);
     }
 
 
