@@ -25,4 +25,14 @@ public class ToastUtils {
         Toast.makeText(context, str, Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * 显示吐司
+     *
+     * @param context
+     * @param str
+     */
+    public static void showToast_1(Context context, String str) {
+        Toast.makeText(context, str, Toast.LENGTH_LONG).show();
+    }
+
 }
