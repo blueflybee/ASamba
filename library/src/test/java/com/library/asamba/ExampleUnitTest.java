@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 public class ExampleUnitTest {
 
     private static final String SMB_URL_PWD = "smb://shaojun:123456@192.168.1.102/homes/";
-    private static final String SMB_URL = "smb://192.168.1.102";
+    private static final String SMB_URL = "smb://192.168.1.102/homes";
     private static final String USERNAME = "shaojun";
     private static final String PWD = "123456";
     private static final String HOST = "192.168.1.102";
