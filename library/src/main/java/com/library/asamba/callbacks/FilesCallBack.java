@@ -11,7 +11,6 @@ import jcifs.smb.SmbFile;
  *     version: 1.0
  * </pre>
  */
-
 public interface FilesCallBack {
 
     void onSuccess(SmbFile[] smbFiles);

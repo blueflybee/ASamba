@@ -6,8 +6,10 @@ import android.util.Log;
 
 import com.library.asamba.callbacks.FilesCallBack;
 import com.library.asamba.data.Stack;
+import com.library.asamba.tasks.FilesTask;
 
 import java.net.MalformedURLException;
+import java.util.EmptyStackException;
 
 
 import jcifs.smb.SmbException;
@@ -35,13 +37,16 @@ public final class Asamba {
     private String mPassword = "";
     private String mHost = "";
     private String mPath = "";
+    private int mReadTimeout = 20000;
+    private int mConnectTimeout = 10000;
 
     private Context mContext;
 
-    private Stack<SmbFile> mStack = new Stack();
+    private Stack<SmbFile> mStack;
 
     private Asamba(Context context) {
         this.mContext = context;
+        this.mStack = new Stack<>();
     }
 
     public static Asamba with(Context context) {
@@ -66,33 +71,51 @@ public final class Asamba {
         return mAsamba;
     }
 
+    /**
+     * Path must end with "/".
+     *
+     * @param path
+     * @return
+     */
     public Asamba path(String path) {
         this.mPath = path;
         return mAsamba;
     }
 
+    public Asamba readTimeout(int readTimeout) {
+        this.mReadTimeout = readTimeout;
+        return mAsamba;
+    }
+
+    public Asamba connectTimeout(int connectTimeout) {
+        this.mConnectTimeout = connectTimeout;
+        return mAsamba;
+    }
+
     public Asamba init() {
         try {
-            if (TextUtils.isEmpty(URL)) {
-                StringBuilder builder = new StringBuilder();
-                if (TextUtils.isEmpty(mUsername) || TextUtils.isEmpty(mPassword)) {
-                    builder.append(SMB_AUTH)
-                            .append(mHost)
-                            .append(mPath);
-                } else {
-                    builder.append(SMB_AUTH)
-                            .append(mUsername)
-                            .append(":")
-                            .append(mPassword)
-                            .append("@")
-                            .append(mHost)
-                            .append(mPath);
-                }
-
-                URL = builder.toString();
-                Log.d(TAG, URL);
-                this.mSmbFile = new SmbFile(URL);
+            if (!TextUtils.isEmpty(URL)) return mAsamba;
+            StringBuilder builder = new StringBuilder();
+            if (TextUtils.isEmpty(mUsername) || TextUtils.isEmpty(mPassword)) {
+                builder.append(SMB_AUTH)
+                        .append(mHost)
+                        .append(mPath);
+            } else {
+                builder.append(SMB_AUTH)
+                        .append(mUsername)
+                        .append(":")
+                        .append(mPassword)
+                        .append("@")
+                        .append(mHost)
+                        .append(mPath);
             }
+            URL = builder.toString();
+            Log.d(TAG, URL);
+            this.mSmbFile = new SmbFile(URL);
+            mSmbFile.setConnectTimeout(mConnectTimeout);
+            mSmbFile.setReadTimeout(mReadTimeout);
+            this.mStack.push(mSmbFile);
+
             return mAsamba;
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -101,14 +124,36 @@ public final class Asamba {
         }
     }
 
-
     public Context getContext() {
         return mContext;
     }
 
+    public Asamba enter(SmbFile target) {
+        try {
+            if (target.isFile()) return mAsamba;
+            this.mStack.push(target);
+            this.mSmbFile = mStack.peek();
+            return mAsamba;
+        } catch (SmbException e) {
+            e.printStackTrace();
+            return mAsamba;
+        }
+
+    }
+
+
+    public Asamba out() {
+        if (mStack.size() == 1) {
+            mSmbFile = mStack.peek();
+        } else {
+            mStack.pop();
+            mSmbFile = mStack.peek();
+        }
+        return mAsamba;
+    }
+
     public void files(FilesCallBack filesCallBack) {
-
-
+        new FilesTask(mContext, filesCallBack).execute(mSmbFile);
     }
 
 }

@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.sample.asamba.R;
@@ -25,6 +26,7 @@ import jcifs.smb.SmbFile;
 public class SmbFileAdapter extends RecyclerView.Adapter<SmbFileAdapter.ViewHolder> {
 
     private SmbFile[] mSmbFiles;
+    private OnItemClickListener mOnItemClickListener;
 
     public SmbFileAdapter(SmbFile[] files) {
         this.mSmbFiles = files;
@@ -43,7 +45,7 @@ public class SmbFileAdapter extends RecyclerView.Adapter<SmbFileAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // 绑定数据
-        holder.mTv.setText(mSmbFiles[position].getPath());
+        holder.mTv.setText(mSmbFiles[position].getName());
     }
 
     @Override
@@ -58,6 +60,14 @@ public class SmbFileAdapter extends RecyclerView.Adapter<SmbFileAdapter.ViewHold
 
         public ViewHolder(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mOnItemClickListener != null) {
+                        mOnItemClickListener.onItemClick(v, mSmbFiles[getAdapterPosition()]);
+                    }
+                }
+            });
             mTv = (TextView) itemView.findViewById(R.id.tv_file);
         }
     }
@@ -66,5 +76,15 @@ public class SmbFileAdapter extends RecyclerView.Adapter<SmbFileAdapter.ViewHold
     public void updateData(SmbFile[] files) {
         this.mSmbFiles = (files == null ? new SmbFile[]{} : files);
         notifyDataSetChanged();
+    }
+
+
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        mOnItemClickListener = listener;
+    }
+
+    public interface OnItemClickListener{
+        void onItemClick(View view, SmbFile smbFile);
     }
 }
