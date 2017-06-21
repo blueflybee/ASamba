@@ -1,7 +1,5 @@
 package com.library.asamba;
 
-import com.library.asamba.utils.SmbUtil;
-
 import org.junit.Test;
 
 import java.io.IOException;
@@ -108,13 +106,7 @@ public class ExampleUnitTest {
         System.out.println(files.length + " files in " + t2 + "ms");
     }
 
-    @Test
-    public void testLogin() {
 
-        boolean isLogin = SmbUtil.login(USERNAME, PWD, HOST, PATH);
-
-        assertTrue("login failed", isLogin);
-    }
 
 
 }

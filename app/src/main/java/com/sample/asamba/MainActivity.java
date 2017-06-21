@@ -1,14 +1,16 @@
 package com.sample.asamba;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
+import com.library.asamba.callbacks.FilesCallBack;
 import com.library.asamba.smb.Asamba;
+import com.library.asamba.utils.ToastUtils;
 import com.sample.asamba.adapter.SmbFileAdapter;
-import com.sample.asamba.task.SmbAsyncTask;
 
 import jcifs.smb.SmbFile;
 
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private SmbFileAdapter mAdapter;
 
     private RecyclerView.LayoutManager mLayoutManager;
+    private Object context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,19 +34,28 @@ public class MainActivity extends AppCompatActivity {
         initData();
         initView();
 
+        Asamba.with(this).files(new FilesCallBack() {
 
-        new SmbAsyncTask(this) {
             @Override
-            protected void after(SmbFile[] files) {
-                mAdapter.updateData(files);
+            public void onSuccess(SmbFile[] smbFiles) {
+                mAdapter.updateData(smbFiles);
             }
-        }.execute();
+
+            @Override
+            public void onFail(String message) {
+                ToastUtils.showToast(getContext(), message);
+            }
+        });
+
     }
 
     private void initASamba() {
-
-
-
+        Asamba.with(this)
+                .username("shaojun")
+                .password("123456")
+                .host("192.168.1.102")
+                .path("/")
+                .init();
     }
 
     private void initData() {
@@ -63,4 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public Context getContext() {
+        return this;
+    }
 }

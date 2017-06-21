@@ -42,7 +42,7 @@ public abstract class SmbAsyncTask extends AsyncTask<Void , Void, SmbFile[]> {
      */
     @Override
     protected SmbFile[] doInBackground(Void ... params) {
-        return getData();
+        return null;
     }
 
     @Override
@@ -66,14 +66,5 @@ public abstract class SmbAsyncTask extends AsyncTask<Void , Void, SmbFile[]> {
 
     }
 
-    private SmbFile[] getData() {
-        Asamba asamba = Asamba.with(mContext)
-                .username("shaojun")
-                .password("123456")
-                .host("192.168.1.102")
-                .get();
 
-
-        return asamba.listFiles();
-    }
 }

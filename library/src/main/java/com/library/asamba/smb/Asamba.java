@@ -4,7 +4,11 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.library.asamba.callbacks.FilesCallBack;
+import com.library.asamba.data.Stack;
+
 import java.net.MalformedURLException;
+
 
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
@@ -31,7 +35,10 @@ public final class Asamba {
     private String mPassword = "";
     private String mHost = "";
     private String mPath = "";
+
     private Context mContext;
+
+    private Stack<SmbFile> mStack = new Stack();
 
     private Asamba(Context context) {
         this.mContext = context;
@@ -64,7 +71,7 @@ public final class Asamba {
         return mAsamba;
     }
 
-    public Asamba get() {
+    public Asamba init() {
         try {
             if (TextUtils.isEmpty(URL)) {
                 StringBuilder builder = new StringBuilder();
@@ -94,13 +101,14 @@ public final class Asamba {
         }
     }
 
-    public SmbFile[] listFiles() {
-        try {
-            return this.mSmbFile.listFiles();
-        } catch (SmbException e) {
-            e.printStackTrace();
-            Log.d(TAG, e.getMessage());
-            return new SmbFile[]{};
-        }
+
+    public Context getContext() {
+        return mContext;
     }
+
+    public void files(FilesCallBack filesCallBack) {
+
+
+    }
+
 }
