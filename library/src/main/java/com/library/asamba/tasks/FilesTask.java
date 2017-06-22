@@ -3,7 +3,7 @@ package com.library.asamba.tasks;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import com.library.asamba.callbacks.FileResult;
+import com.library.asamba.callbacks.FilesResult;
 import com.library.asamba.callbacks.FilesCallBack;
 
 import jcifs.smb.SmbException;
@@ -18,7 +18,7 @@ import jcifs.smb.SmbFile;
  *     version: 1.0
  * </pre>
  */
-public class FilesTask extends AsyncTask<SmbFile, Void, FileResult> {
+public class FilesTask extends AsyncTask<SmbFile, Void, FilesResult> {
 
     private Context mContext;
     private FilesCallBack mCallBack;
@@ -45,8 +45,8 @@ public class FilesTask extends AsyncTask<SmbFile, Void, FileResult> {
      * @see android.os.AsyncTask#doInBackground(Params[])
      */
     @Override
-    protected FileResult doInBackground(SmbFile... params) {
-        FileResult result = new FileResult();
+    protected FilesResult doInBackground(SmbFile... params) {
+        FilesResult result = new FilesResult();
         if (params.length == 0) return result;
         SmbFile smbFile = params[0];
         if (smbFile == null) return result;
@@ -56,15 +56,16 @@ public class FilesTask extends AsyncTask<SmbFile, Void, FileResult> {
         } catch (SmbException e) {
             e.printStackTrace();
             result.setMessage(e.getMessage());
+            result.setFailed(true);
             return result;
 
         }
     }
 
     @Override
-    protected void onPostExecute(FileResult result) {
+    protected void onPostExecute(FilesResult result) {
         super.onPostExecute(result);
-        if (result.getSmbFiles() == null) {
+        if (result.isFailed()) {
             mCallBack.onFail(result.getMessage());
         } else {
             mCallBack.onSuccess(result.getSmbFiles());

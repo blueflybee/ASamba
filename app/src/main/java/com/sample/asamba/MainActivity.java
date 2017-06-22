@@ -31,23 +31,32 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initASamba();
+//        initASamba();
 
         initData();
         initView();
 
-        Asamba.with(this).files(new FilesCallBack() {
+        System.out.println(getCacheDir());
 
+        new SmbAsyncTask(this) {
             @Override
-            public void onSuccess(SmbFile[] smbFiles) {
-                mAdapter.updateData(smbFiles);
-            }
+            protected void after(SmbFile[] files) {
 
-            @Override
-            public void onFail(String message) {
-                ToastUtils.showToast(getContext(), message);
             }
-        });
+        }.execute();
+
+//        Asamba.with(this).files(new FilesCallBack() {
+//
+//            @Override
+//            public void onSuccess(SmbFile[] smbFiles) {
+//                mAdapter.updateData(smbFiles);
+//            }
+//
+//            @Override
+//            public void onFail(String message) {
+//                ToastUtils.showToast(getContext(), message);
+//            }
+//        });
 
     }
 

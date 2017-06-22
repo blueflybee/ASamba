@@ -12,10 +12,20 @@ import jcifs.smb.SmbFile;
  * </pre>
  */
 
-public class FileResult {
+public class FilesResult {
 
     private SmbFile[] smbFiles;
     private String message;
+
+    public boolean isFailed() {
+        return isFailed;
+    }
+
+    public void setFailed(boolean failed) {
+        isFailed = failed;
+    }
+
+    private boolean isFailed;
 
     public SmbFile[] getSmbFiles() {
         return smbFiles;

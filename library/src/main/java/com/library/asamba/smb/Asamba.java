@@ -4,12 +4,12 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.library.asamba.callbacks.FilesResult;
 import com.library.asamba.callbacks.FilesCallBack;
 import com.library.asamba.data.Stack;
 import com.library.asamba.tasks.FilesTask;
 
 import java.net.MalformedURLException;
-import java.util.EmptyStackException;
 
 
 import jcifs.smb.SmbException;
@@ -141,7 +141,6 @@ public final class Asamba {
 
     }
 
-
     public Asamba out() {
         if (mStack.size() == 1) {
             mSmbFile = mStack.peek();
@@ -153,7 +152,15 @@ public final class Asamba {
     }
 
     public void files(FilesCallBack filesCallBack) {
-        new FilesTask(mContext, filesCallBack).execute(mSmbFile);
+        new FilesTask(mContext, filesCallBack){
+            @Override
+            protected void onPostExecute(FilesResult result) {
+                super.onPostExecute(result);
+                if (result.isFailed()) {
+                    mStack.pop();
+                }
+            }
+        }.execute(mSmbFile);
     }
 
 }
