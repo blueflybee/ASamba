@@ -49,12 +49,13 @@ public abstract class SmbAsyncTask extends AsyncTask<Void, Void, SmbFile[]> {
     protected SmbFile[] doInBackground(Void... params) {
 
         try {
-            SmbFile f = new SmbFile("smb://shaojun:123456@192.168.1.102/homes/pic/a.txt");
+            SmbFile f = new SmbFile("smb://shaojun:123456@192.168.1.102/homes/pic/");
             SmbFileInputStream in = new SmbFileInputStream(f);
-            String filePath = mContext.getCacheDir().getAbsolutePath()+ "/a.txt";
-            System.out.println("filePath = " + filePath);
-            File file = new File(mContext.getCacheDir(), "b.txt");
-            System.out.println("file.getPath() = " + file.getPath());
+
+//            String filePath = mContext.getCacheDir().getAbsolutePath()+ "/a.txt";
+//            System.out.println("filePath = " + filePath);
+            File file = new File(mContext.getCacheDir(), f.getName());
+            System.out.println("file.getPath() = " + file.getAbsolutePath());
 
             if (file.exists()) {
                 file.delete();
@@ -62,7 +63,6 @@ public abstract class SmbAsyncTask extends AsyncTask<Void, Void, SmbFile[]> {
 //            file.mkdirs();
             if (!file.exists()) {
                 file.createNewFile();
-
             }
             FileOutputStream out = new FileOutputStream(file);
 

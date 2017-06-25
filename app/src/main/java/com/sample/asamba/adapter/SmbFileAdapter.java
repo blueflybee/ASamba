@@ -27,6 +27,7 @@ public class SmbFileAdapter extends RecyclerView.Adapter<SmbFileAdapter.ViewHold
 
     private SmbFile[] mSmbFiles;
     private OnItemClickListener mOnItemClickListener;
+    private OnItemLongClickListener mOnItemLongClickListener;
 
     public SmbFileAdapter(SmbFile[] files) {
         this.mSmbFiles = files;
@@ -68,6 +69,16 @@ public class SmbFileAdapter extends RecyclerView.Adapter<SmbFileAdapter.ViewHold
                     }
                 }
             });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (mOnItemLongClickListener != null) {
+                        mOnItemLongClickListener.onItemLongClick(v, mSmbFiles[getAdapterPosition()]);
+                        return true;
+                    }
+                    return false;
+                }
+            });
             mTv = (TextView) itemView.findViewById(R.id.tv_file);
         }
     }
@@ -87,4 +98,14 @@ public class SmbFileAdapter extends RecyclerView.Adapter<SmbFileAdapter.ViewHold
     public interface OnItemClickListener{
         void onItemClick(View view, SmbFile smbFile);
     }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+        mOnItemLongClickListener = listener;
+    }
+
+    public interface OnItemLongClickListener{
+        boolean onItemLongClick(View view, SmbFile smbFile);
+    }
+
+
 }

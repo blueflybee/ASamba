@@ -8,11 +8,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.library.asamba.callbacks.DownloadCallBack;
 import com.library.asamba.callbacks.FilesCallBack;
 import com.library.asamba.smb.Asamba;
 import com.library.asamba.utils.ToastUtils;
 import com.sample.asamba.adapter.SmbFileAdapter;
 import com.sample.asamba.task.SmbAsyncTask;
+
+import java.io.File;
 
 import jcifs.smb.SmbFile;
 
@@ -31,32 +34,30 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        initASamba();
+        initASamba();
 
         initData();
         initView();
 
-        System.out.println(getCacheDir());
+//        new SmbAsyncTask(this) {
+//            @Override
+//            protected void after(SmbFile[] files) {
+//
+//            }
+//        }.execute();
 
-        new SmbAsyncTask(this) {
+        Asamba.with(this).files(new FilesCallBack() {
+
             @Override
-            protected void after(SmbFile[] files) {
-
+            public void onSuccess(SmbFile[] smbFiles) {
+                mAdapter.updateData(smbFiles);
             }
-        }.execute();
 
-//        Asamba.with(this).files(new FilesCallBack() {
-//
-//            @Override
-//            public void onSuccess(SmbFile[] smbFiles) {
-//                mAdapter.updateData(smbFiles);
-//            }
-//
-//            @Override
-//            public void onFail(String message) {
-//                ToastUtils.showToast(getContext(), message);
-//            }
-//        });
+            @Override
+            public void onFail(String message) {
+                ToastUtils.showToast(getContext(), message);
+            }
+        });
 
     }
 
@@ -87,6 +88,31 @@ public class MainActivity extends AppCompatActivity {
                         ToastUtils.showToast(getContext(), message);
                     }
                 });
+            }
+        });
+
+        mAdapter.setOnItemLongClickListener(new SmbFileAdapter.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(View view, SmbFile smbFile) {
+                System.out.println("smbFile = " + smbFile.getPath());
+                File file = new File(getContext().getCacheDir(), smbFile.getName());
+                System.out.println("file.getPath() = " + file.getAbsolutePath());
+                Asamba.with(getContext())
+                        .get(smbFile.getPath())
+                        .into(file.getAbsolutePath())
+                        .download(new DownloadCallBack() {
+                            @Override
+                            public void onSuccess(String message, String des) {
+                                ToastUtils.showToast(getContext(), message + des);
+                            }
+
+                            @Override
+                            public void onFail(String message) {
+                                ToastUtils.showToast(getContext(), message);
+
+                            }
+                        });
+                return false;
             }
         });
     }

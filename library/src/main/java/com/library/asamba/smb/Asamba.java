@@ -4,9 +4,12 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.library.asamba.callbacks.DownloadCallBack;
+import com.library.asamba.callbacks.DownloadResult;
 import com.library.asamba.callbacks.FilesResult;
 import com.library.asamba.callbacks.FilesCallBack;
 import com.library.asamba.data.Stack;
+import com.library.asamba.tasks.DownloadTask;
 import com.library.asamba.tasks.FilesTask;
 
 import java.net.MalformedURLException;
@@ -33,12 +36,19 @@ public final class Asamba {
 
     private SmbFile mSmbFile;
 
+    /**
+     *
+     */
     private String mUsername = "";
     private String mPassword = "";
     private String mHost = "";
     private String mPath = "";
     private int mReadTimeout = 20000;
     private int mConnectTimeout = 10000;
+
+    //
+    private String mOrigin;
+    private String mDestination;
 
     private Context mContext;
 
@@ -163,4 +173,25 @@ public final class Asamba {
         }.execute(mSmbFile);
     }
 
+    public Asamba get(String origin) {
+        this.mOrigin = origin;
+        return mAsamba;
+    }
+
+    public Asamba into(String destination) {
+        this.mDestination = destination;
+        return mAsamba;
+    }
+
+    public void download(DownloadCallBack downloadCallBack) {
+        new DownloadTask(mContext, downloadCallBack){
+            @Override
+            protected void onPostExecute(DownloadResult result) {
+                super.onPostExecute(result);
+//                if (result.isFailed()) {
+//                    mStack.pop();
+//                }
+            }
+        }.execute(mOrigin, mDestination);
+    }
 }
