@@ -16,4 +16,6 @@ public interface DownloadCallBack {
     void onSuccess(String message, String des);
 
     void onFail(String message);
+
+    void onProgress(int progress);
 }

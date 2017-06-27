@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.library.asamba.callbacks.DownloadCallBack;
 import com.library.asamba.callbacks.FilesCallBack;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private RecyclerView mRecyclerView;
+    private ProgressBar mProgressBar;
 
     private SmbFileAdapter mAdapter;
 
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         Asamba.with(getContext())
                 .username("shaojun")
                 .password("123456")
-                .host("192.168.1.102")
+                .host("192.168.1.103")
                 .path("/")
                 .init();
     }
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                         .download(new DownloadCallBack() {
                             @Override
                             public void onSuccess(String message, String des) {
+                                mProgressBar.setProgress(0);
                                 ToastUtils.showToast(getContext(), message + des);
                             }
 
@@ -110,6 +113,12 @@ public class MainActivity extends AppCompatActivity {
                             public void onFail(String message) {
                                 ToastUtils.showToast(getContext(), message);
 
+                            }
+
+                            @Override
+                            public void onProgress(int progress) {
+                                System.out.println("progress = " + progress);
+                                mProgressBar.setProgress(progress);
                             }
                         });
                 return false;
@@ -143,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
         // 设置adapter
         mRecyclerView.setAdapter(mAdapter);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.my_progress);
 
     }
 
