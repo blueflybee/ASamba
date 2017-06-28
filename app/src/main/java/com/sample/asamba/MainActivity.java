@@ -102,26 +102,29 @@ public class MainActivity extends AppCompatActivity {
             public boolean onItemLongClick(View view, SmbFile smbFile) {
                 System.out.println("smbFile = " + smbFile.getPath());
                 File file = new File(getContext().getCacheDir(), smbFile.getName());
-                System.out.println("file.getPath() = " + file.getAbsolutePath());
+
                 Asamba.with(getContext())
                         .get(smbFile.getPath())
                         .into(file.getAbsolutePath())
                         .download(new DownloadCallBack() {
                             @Override
                             public void onSuccess(String message, String des) {
+                                mProgressBar.setVisibility(View.GONE);
                                 mProgressBar.setProgress(0);
                                 ToastUtils.showToast(getContext(), message + des);
                             }
 
                             @Override
                             public void onFail(String message) {
+                                mProgressBar.setVisibility(View.GONE);
                                 ToastUtils.showToast(getContext(), message);
-
                             }
 
                             @Override
                             public void onProgress(int progress) {
-                                System.out.println("progress = " + progress);
+                                if (!mProgressBar.isShown()) {
+                                    mProgressBar.setVisibility(View.VISIBLE);
+                                }
                                 mProgressBar.setProgress(progress);
                             }
                         });
@@ -149,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
-
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         // 设置布局管理器

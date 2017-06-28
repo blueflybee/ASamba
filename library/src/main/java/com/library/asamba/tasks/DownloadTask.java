@@ -39,7 +39,7 @@ public class DownloadTask extends AsyncTask<String, Integer, DownloadResult> {
     private Context mContext;
     private DownloadCallBack mCallBack;
     private long totOriginLength = 0;
-    private double totDesLength = 0;
+    private long totDesLength = 0;
 
 
     public DownloadTask(Context context, DownloadCallBack callBack) {
@@ -73,33 +73,18 @@ public class DownloadTask extends AsyncTask<String, Integer, DownloadResult> {
         }
 
         String origin = params[0];
-        final String des = params[1];
+        String des = params[1];
         if (TextUtils.isEmpty(origin) ||
                 TextUtils.isEmpty(des)) {
             result.setSuccess(false);
             result.setMessage("文件无法下载");
             return result;
         }
-        SmbFile smbFile = null;
 
         try {
-
-            smbFile = new SmbFile(origin);
-            final long totleLength = calculateOriginFileLength(smbFile);
-            System.out.println("totleLength = " + totleLength);
-//
-//            TimerTask timerTask = new TimerTask() {
-//                @Override
-//                public void run() {
-////                    long desFileLength = calculateDesFileLength(new File(des));
-//                    System.out.println("totDesLength = " + totDesLength);
-//                    double persent = totDesLength / totleLength;
-//                    System.out.println("persent = " + persent);
-//
-//                }
-//            };
-//            Timer timer = new Timer();
-//            timer.schedule(timerTask, 0, 100);
+            SmbFile smbFile = new SmbFile(origin);
+            calculateOriginFileLength(smbFile);
+            System.out.println("totleLength = " + totOriginLength);
             if (smbFile.isFile()) {
                 return downloadFile(origin, des);
             } else {
@@ -108,29 +93,25 @@ public class DownloadTask extends AsyncTask<String, Integer, DownloadResult> {
         } catch (Exception e) {
             e.printStackTrace();
             result.setSuccess(false);
-            result.setMessage("下载出错");
+            result.setMessage("文件下载出错");
             return result;
         }
     }
 
-    private long calculateOriginFileLength(SmbFile smbFile) throws SmbException {
-
+    private void calculateOriginFileLength(SmbFile smbFile) throws SmbException {
         if (smbFile.isFile()) {
             totOriginLength += smbFile.length();
-            System.out.println("totOriginLength = " + totOriginLength);
         } else if (smbFile.isDirectory()) {
             SmbFile[] smbFiles = smbFile.listFiles();
             for (SmbFile file : smbFiles) {
                 if (file.isFile()) {
                     totOriginLength += file.length();
                 }
-
                 if (file.isDirectory()) {
-                    totOriginLength += calculateOriginFileLength(file);
+                    calculateOriginFileLength(file);
                 }
             }
         }
-        return totOriginLength;
     }
 
     @Override
@@ -199,12 +180,12 @@ public class DownloadTask extends AsyncTask<String, Integer, DownloadResult> {
             return result;
         }
 
-        System.out.println(file.exists());
-        System.out.println(file.isDirectory());
+//        System.out.println(file.exists());
+//        System.out.println(file.isDirectory());
 
         long t0 = System.currentTimeMillis();
 
-        byte[] b = new byte[1024];
+        byte[] b = new byte[2048];
         int n, tot = 0;
         long t1 = t0;
         try {
@@ -212,9 +193,9 @@ public class DownloadTask extends AsyncTask<String, Integer, DownloadResult> {
                 System.out.println("t1 = " + t1);
                 out.write(b, 0, n);
                 tot += n;
-                System.out.println("totDesLength++++++++++++++++++++++++++ = " + totDesLength);
+//                System.out.println("totDesLength++++++++++++++++++++++++++ = " + totDesLength);
                 totDesLength += n;
-                int persent = (int) (totDesLength / totOriginLength * 100);
+                int persent = (int) ((double) totDesLength / totOriginLength * 100);
                 System.out.println("persent = " + persent);
 
                 publishProgress(persent);
