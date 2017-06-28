@@ -1,8 +1,12 @@
 package com.sample.asamba;
 
+import android.app.Notification;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -14,7 +18,6 @@ import com.library.asamba.callbacks.FilesCallBack;
 import com.library.asamba.smb.Asamba;
 import com.library.asamba.utils.ToastUtils;
 import com.sample.asamba.adapter.SmbFileAdapter;
-import com.sample.asamba.task.SmbAsyncTask;
 
 import java.io.File;
 
@@ -64,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initASamba() {
+
         Asamba.with(getContext())
                 .username("shaojun")
                 .password("123456")
