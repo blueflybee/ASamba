@@ -1,11 +1,7 @@
 package com.sample.asamba;
 
-import android.app.Notification;
 import android.content.Context;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -104,9 +100,9 @@ public class MainActivity extends AppCompatActivity {
                 File file = new File(getContext().getCacheDir(), smbFile.getName());
 
                 Asamba.with(getContext())
-                        .get(smbFile.getPath())
-                        .into(file.getAbsolutePath())
-                        .download(new DownloadCallBack() {
+                        .from(smbFile.getPath())
+                        .to(file.getAbsolutePath())
+                        .get(new DownloadCallBack() {
                             @Override
                             public void onSuccess(String message, String des) {
                                 mProgressBar.setVisibility(View.GONE);
@@ -139,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Asamba.with(getContext()).out().files(new FilesCallBack() {
+                Asamba.with(getContext()).back().files(new FilesCallBack() {
                     @Override
                     public void onSuccess(SmbFile[] smbFiles) {
                         mAdapter.updateData(smbFiles);

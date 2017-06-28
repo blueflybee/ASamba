@@ -151,7 +151,7 @@ public final class Asamba {
 
     }
 
-    public Asamba out() {
+    public Asamba back() {
         if (mStack.size() == 1) {
             mSmbFile = mStack.peek();
         } else {
@@ -173,17 +173,17 @@ public final class Asamba {
         }.execute(mSmbFile);
     }
 
-    public Asamba get(String origin) {
+    public Asamba from(String origin) {
         this.mOrigin = origin;
         return mAsamba;
     }
 
-    public Asamba into(String destination) {
+    public Asamba to(String destination) {
         this.mDestination = destination;
         return mAsamba;
     }
 
-    public void download(DownloadCallBack downloadCallBack) {
+    public void get(DownloadCallBack downloadCallBack) {
         new DownloadTask(mContext, downloadCallBack){
             @Override
             protected void onPostExecute(DownloadResult result) {

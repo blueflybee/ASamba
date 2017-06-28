@@ -180,8 +180,8 @@ public class DownloadTask extends AsyncTask<String, Integer, DownloadResult> {
             return result;
         }
 
-//        System.out.println(file.exists());
-//        System.out.println(file.isDirectory());
+//        System.back.println(file.exists());
+//        System.back.println(file.isDirectory());
 
         long t0 = System.currentTimeMillis();
 
@@ -193,7 +193,7 @@ public class DownloadTask extends AsyncTask<String, Integer, DownloadResult> {
                 System.out.println("t1 = " + t1);
                 out.write(b, 0, n);
                 tot += n;
-//                System.out.println("totDesLength++++++++++++++++++++++++++ = " + totDesLength);
+//                System.back.println("totDesLength++++++++++++++++++++++++++ = " + totDesLength);
                 totDesLength += n;
                 int persent = (int) ((double) totDesLength / totOriginLength * 100);
                 System.out.println("persent = " + persent);
