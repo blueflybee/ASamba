@@ -48,49 +48,6 @@ public abstract class SmbAsyncTask extends AsyncTask<Void, Void, SmbFile[]> {
     @Override
     protected SmbFile[] doInBackground(Void... params) {
 
-        try {
-            SmbFile f = new SmbFile("smb://shaojun:123456@192.168.1.102/homes/pic/");
-            SmbFileInputStream in = new SmbFileInputStream(f);
-
-//            String filePath = mContext.getCacheDir().getAbsolutePath()+ "/a.txt";
-//            System.back.println("filePath = " + filePath);
-            File file = new File(mContext.getCacheDir(), f.getName());
-            System.out.println("file.getPath() = " + file.getAbsolutePath());
-
-            if (file.exists()) {
-                file.delete();
-            }
-//            file.mkdirs();
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-            FileOutputStream out = new FileOutputStream(file);
-
-            System.out.println(file.exists());
-            System.out.println(file.isDirectory());
-
-            long t0 = System.currentTimeMillis();
-
-            byte[] b = new byte[8192];
-            int n, tot = 0;
-            long t1 = t0;
-            while ((n = in.read(b)) > 0) {
-                System.out.println("t1 = " + t1);
-                out.write(b, 0, n);
-                tot += n;
-                System.out.print('#');
-            }
-
-            long t = System.currentTimeMillis() - t0;
-
-            System.out.println();
-            System.out.println(tot + " bytes transfered in " + (t / 1000) + " seconds at " + ((tot / 1000) / Math.max(1, (t / 1000))) + "Kbytes/sec");
-
-            in.close();
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return null;
     }
 

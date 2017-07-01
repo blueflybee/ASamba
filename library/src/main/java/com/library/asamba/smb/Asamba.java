@@ -4,11 +4,14 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.library.asamba.callbacks.DeleteCallBack;
+import com.library.asamba.callbacks.DeleteResult;
 import com.library.asamba.callbacks.DownloadCallBack;
 import com.library.asamba.callbacks.DownloadResult;
 import com.library.asamba.callbacks.FilesResult;
 import com.library.asamba.callbacks.FilesCallBack;
 import com.library.asamba.data.Stack;
+import com.library.asamba.tasks.DeleteTask;
 import com.library.asamba.tasks.DownloadTask;
 import com.library.asamba.tasks.FilesTask;
 
@@ -36,9 +39,6 @@ public final class Asamba {
 
     private SmbFile mSmbFile;
 
-    /**
-     *
-     */
     private String mUsername = "";
     private String mPassword = "";
     private String mHost = "";
@@ -49,6 +49,8 @@ public final class Asamba {
     //
     private String mOrigin;
     private String mDestination;
+
+    private String mTarget;
 
     private Context mContext;
 
@@ -184,14 +186,15 @@ public final class Asamba {
     }
 
     public void get(DownloadCallBack downloadCallBack) {
-        new DownloadTask(mContext, downloadCallBack){
-            @Override
-            protected void onPostExecute(DownloadResult result) {
-                super.onPostExecute(result);
-//                if (result.isFailed()) {
-//                    mStack.pop();
-//                }
-            }
-        }.execute(mOrigin, mDestination);
+        new DownloadTask(mContext, downloadCallBack).execute(mOrigin, mDestination);
+    }
+
+    public Asamba target(String target) {
+        this.mTarget = target;
+        return mAsamba;
+    }
+
+    public void delete(DeleteCallBack deleteCallBack) {
+        new DeleteTask(mContext, deleteCallBack).execute(mTarget);
     }
 }

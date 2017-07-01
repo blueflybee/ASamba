@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">ASamba</string>
+
+    <string-array name="dialog_item" >
+        <item>下载</item>
+        <item>上传</item>
+        <item>删除</item>
+    </string-array>
 </resources>

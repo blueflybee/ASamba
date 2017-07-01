@@ -1,6 +1,8 @@
 package com.sample.asamba;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,11 +11,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.library.asamba.callbacks.DeleteCallBack;
 import com.library.asamba.callbacks.DownloadCallBack;
 import com.library.asamba.callbacks.FilesCallBack;
 import com.library.asamba.smb.Asamba;
 import com.library.asamba.utils.ToastUtils;
 import com.sample.asamba.adapter.SmbFileAdapter;
+import com.sample.asamba.utils.DialogUtil;
 
 import java.io.File;
 
@@ -28,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private SmbFileAdapter mAdapter;
 
     private RecyclerView.LayoutManager mLayoutManager;
-    private Object context;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
         initData();
         initView();
-
-//        new SmbAsyncTask(this) {
-//            @Override
-//            protected void after(SmbFile[] files) {
-//
-//            }
-//        }.execute();
 
         Asamba.with(this).files(new FilesCallBack() {
 
@@ -98,35 +95,77 @@ public class MainActivity extends AppCompatActivity {
             public boolean onItemLongClick(View view, SmbFile smbFile) {
                 System.out.println("smbFile = " + smbFile.getPath());
                 File file = new File(getContext().getCacheDir(), smbFile.getName());
-
-                Asamba.with(getContext())
-                        .from(smbFile.getPath())
-                        .to(file.getAbsolutePath())
-                        .get(new DownloadCallBack() {
-                            @Override
-                            public void onSuccess(String message, String des) {
-                                mProgressBar.setVisibility(View.GONE);
-                                mProgressBar.setProgress(0);
-                                ToastUtils.showToast(getContext(), message + des);
-                            }
-
-                            @Override
-                            public void onFail(String message) {
-                                mProgressBar.setVisibility(View.GONE);
-                                ToastUtils.showToast(getContext(), message);
-                            }
-
-                            @Override
-                            public void onProgress(int progress) {
-                                if (!mProgressBar.isShown()) {
-                                    mProgressBar.setVisibility(View.VISIBLE);
-                                }
-                                mProgressBar.setProgress(progress);
-                            }
-                        });
+                showListDialog(smbFile, file);
                 return false;
             }
         });
+    }
+
+    private void download(SmbFile smbFile, File file) {
+        Asamba.with(getContext())
+                .from(smbFile.getPath())
+                .to(file.getAbsolutePath())
+                .get(new DownloadCallBack() {
+                    @Override
+                    public void onSuccess(String message, String des) {
+                        mProgressBar.setVisibility(View.GONE);
+                        mProgressBar.setProgress(0);
+                        ToastUtils.showToast(getContext(), message + des);
+                    }
+
+                    @Override
+                    public void onFail(String message) {
+                        mProgressBar.setVisibility(View.GONE);
+                        ToastUtils.showToast(getContext(), message);
+                    }
+
+                    @Override
+                    public void onProgress(int progress) {
+                        if (!mProgressBar.isShown()) {
+                            mProgressBar.setVisibility(View.VISIBLE);
+                        }
+                        mProgressBar.setProgress(progress);
+                    }
+                });
+    }
+
+    private void showListDialog(final SmbFile smbFile, final File file) {
+        String[] items = getResources().getStringArray(R.array.dialog_item);
+        DialogUtil.showListDialog(getContext(), "请选择", items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        download(smbFile, file);
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        delete(smbFile);
+                        break;
+
+                }
+
+            }
+        });
+    }
+
+    private void delete(SmbFile smbFile) {
+        Asamba.with(getContext())
+                .target(smbFile.getPath())
+                .delete(new DeleteCallBack() {
+
+                    @Override
+                    public void onSuccess(SmbFile[] smbFiles, String message) {
+                        ToastUtils.showToast(getContext(), message);
+                        mAdapter.updateData(smbFiles);
+                    }
+
+                    @Override
+                    public void onFail(String message) {
+                        ToastUtils.showToast(getContext(), message);
+                    }
+                });
     }
 
     private void initView() {
