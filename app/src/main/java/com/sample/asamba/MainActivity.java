@@ -134,13 +134,17 @@ public class MainActivity extends AppCompatActivity {
         DialogUtil.showListDialog(getContext(), "请选择", items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                
                 switch (which) {
                     case 0:
-                        download(smbFile, file);
+
                         break;
                     case 1:
+                        download(smbFile, file);
                         break;
                     case 2:
+                        break;
+                    case 3:
                         delete(smbFile);
                         break;
 
